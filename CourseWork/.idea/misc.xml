@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/drawable/btn_color.xml" value="0.2703125" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/drawable/edit_text.xml" value="0.2703125" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/drawable/search_round.xml" value="0.2703125" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/activity_main.xml" value="0.21422101449275363" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/dialog_view.xml" value="0.11864406779661017" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/dialog_view_2.xml" value="0.12291666666666666" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/fdi_bottom_sheet.xml" value="0.21422101449275363" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/fragment_dashboard.xml" value="0.21422101449275363" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/fragment_home.xml" value="0.21422101449275363" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/fragment_notifications.xml" value="0.12291666666666666" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/invest_bottom_sheet.xml" value="0.12291666666666666" />
+        <entry key="..\:/kursach/course_2/course_work/Project/CourseWork/app/src/main/res/layout/map_bottom_sheet.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

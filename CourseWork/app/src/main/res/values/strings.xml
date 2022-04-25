@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">CourseWork</string>
+    <string name="title_home">Доступные маршруты</string>
+    <string name="title_dashboard">Создать маршрут</string>
+    <string name="title_notifications">Мои маршруты</string>
+    <string name="hint_search">Search</string>
+    <string name="api_map_key">"AIzaSyCZUt-6j9vWlF2YopFbhNyGqFTEx8G8wXA"</string>
+    <string name="filter_tag">Filter</string>
+    <string name="apply_button">Apply</string>
+
+
+    <string-array name="groups">
+        <item>Item 1</item>
+        <item>Item 2</item>
+        <item>Item 3</item>
+        <item>Item 4</item>
+    </string-array>
+
+    <string-array name="currency">
+        <item>AED Millions</item>
+        <item>USD Millions</item>
+        <item>AED Billions</item>
+        <item>USD Billions</item>
+    </string-array>
+
+    <string-array name="bottomSheepSpinner">
+        <item>By Value</item>
+        <item>By Growth</item>
+    </string-array>
+</resources>
