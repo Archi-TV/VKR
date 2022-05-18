@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "currentRating",
         "description",
         "id",
-        "name"
+        "name",
+        "userRate"
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RouteModel {
@@ -22,4 +23,6 @@ public class RouteModel {
     public int id;
     @JsonProperty("name")
     public String name;
+    @JsonProperty("userRate")
+    public double userRate;
 }

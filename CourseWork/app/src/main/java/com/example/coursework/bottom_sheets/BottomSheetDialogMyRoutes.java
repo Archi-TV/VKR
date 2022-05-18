@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,31 +28,30 @@ public class BottomSheetDialogMyRoutes extends BottomSheetDialogFragment {
     private View v;
     private LinearLayout layout;
 
-    private void changePoint(PointForCreate pointForCreate){
-        layout.setBackgroundColor(Color.WHITE);
-        layout.removeAllViews();
-
-        final EditText textViewName = new EditText(getContext(),null, R.drawable.edit_text);
-        textViewName.setText(pointForCreate.name);
-        layout.addView(textViewName);
-
-        final TextView textViewAddress = new TextView(getContext());
-        textViewAddress.setText(pointForCreate.address);
-        layout.addView(textViewAddress);
-
-        final TextView textViewLatLng = new TextView(getContext());
-        //textViewLatLng.setText(pointForCreate.latLng.toString());
-        layout.addView(textViewLatLng);
-
-        Button btn = new Button(getContext(),null, R.style.MyButton);
-        btn.setText("Поменять координату");
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).showSearch();
-            }
-        });
-    }
+//    private void changePoint(PointForCreate pointForCreate){
+//        layout.setBackgroundColor(Color.WHITE);
+//        layout.removeAllViews();
+//
+//        final EditText textViewName = new EditText(getContext(),null, R.drawable.edit_text);
+//        textViewName.setText(pointForCreate.name);
+//        layout.addView(textViewName);
+//
+//        final TextView textViewAddress = new TextView(getContext());
+//        textViewAddress.setText(pointForCreate.address);
+//        layout.addView(textViewAddress);
+//
+//        final TextView textViewLatLng = new TextView(getContext());
+//        layout.addView(textViewLatLng);
+//
+//        Button btn = new Button(getContext(),null, R.style.MyButton);
+//        btn.setText("Поменять координату");
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ((MainActivity)getActivity()).showSearch();
+//            }
+//        });
+//    }
 
     private void showPoints(final ArrayList<PathPoint> pointForCreates, final ChangeRoutModel changeRoutModel){
 
@@ -120,29 +118,17 @@ public class BottomSheetDialogMyRoutes extends BottomSheetDialogFragment {
             textViewAddress.setBackgroundColor(color);
 
             final TextView textViewLatLng = new TextView(getContext());
-            //textViewLatLng.setText(pointForCreate.latLng.toString());
             layout.addView(textViewLatLng);
             textViewLatLng.setBackgroundColor(color);
 
-            Button btn = new Button(getContext(),null, R.style.MyButton);
-            btn.setText("Редактирование");
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //changePoint(pointForCreate);
-                }
-            });
-            //layout.addView(btn);
-
-
-//            final TextView text = new TextView(getContext());
-//            text.setBackgroundColor(color);
-//            text.setTextSize(15);
-//            text.setPadding(0, 5, 0, 0);
-//            text.setTextColor(Color.BLACK);
-//            String text1 = comments.get(i).Name + "\n" + comments.get(i).comment + "\n" + comments.get(i).likes;
-//            text.setText(text1);
-           // layout.addView(text);
+//            Button btn = new Button(getContext(),null, R.style.MyButton);
+//            btn.setText("Редактирование");
+//            btn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    //changePoint(pointForCreate);
+//                }
+//            });
 
 
         }
@@ -202,8 +188,6 @@ public class BottomSheetDialogMyRoutes extends BottomSheetDialogFragment {
                 public void onClick(View view) {
                     ((MainActivity)getActivity()).setCanShowPoints();
                     ((MainActivity)getActivity()).getPointsAsync(response.content.get(j).id);
-                    //ArrayList<PathPoint> ar = ((MainActivity)getActivity()).getPathPointResponse();
-                    //showPoints(((MainActivity)getActivity()).getPathPointResponse());
                     ((MainActivity)getActivity()).setPathId(response.content.get(j).id);
                     dismiss();
                 }
@@ -215,29 +199,12 @@ public class BottomSheetDialogMyRoutes extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         v = inflater.inflate(R.layout.invest_bottom_sheet, container, false);
-
         layout = v.findViewById(R.id.layout);
-
-
-        //mainCompaniesResponse = ((MainActivity)getActivity()).getMainCompaniesResponse();
-        //mainSectorsResponse = ((MainActivity)getActivity()).getMainSectorsResponse();
-        //currency = ((MainActivity)getActivity()).getCurrency();
-        //outwardResponse = ((MainActivity)getActivity()).getOutwardResponse();
-
         TextView text = v.findViewById(R.id.textView);
         text.setText("Мои маршруты");
         text.setTextSize(17);
-
-        //btn_sectors.setBackgroundResource(R.drawable.purple_button);
         RouteModelResponse routeModelResponse;
-//        try{
-//            ((MainActivity)getActivity()).getRoutesByUserAsync(1);
-//            Thread.sleep(200);
-//        }catch (Exception e){
-//
-//        }
         routeModelResponse = ((MainActivity)getActivity()).getRouteModelResponse();
 
 

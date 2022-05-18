@@ -22,7 +22,7 @@
     </style>
 
     <style name="MyButton" parent="Theme.AppCompat">
-        <item name="android:background">@drawable/search_round</item>
+        <item name="android:background">@drawable/btn_color</item>
     </style>
 
 </resources>

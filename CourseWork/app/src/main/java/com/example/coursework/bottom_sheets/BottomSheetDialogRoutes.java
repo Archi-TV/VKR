@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 
 import com.example.coursework.MainActivity;
 import com.example.coursework.R;
+import com.example.coursework.models.AddCommentModel;
 import com.example.coursework.models.Author;
 import com.example.coursework.models.Comment;
 import com.example.coursework.models.RouteModel;
@@ -30,16 +31,7 @@ import java.util.ArrayList;
 public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
     private View v;
     private LinearLayout layout;
-
-    private ArrayList<Comment> getComments(int id){
-        try{
-            ((MainActivity) getActivity()).getCommentsAsync(id);
-            Thread.sleep(200);
-            return ((MainActivity) getActivity()).getCommentResponse().content;
-        }catch (Exception e){
-            return new ArrayList<>();
-        }
-    }
+    private int routeId = 0;
 
     private void description(final RouteModel routeModel){
         layout.setBackgroundColor(Color.WHITE);
@@ -72,8 +64,11 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        comment(getComments(routeModel.id));
+                        routeId = routeModel.id;
+                        ((MainActivity) getActivity()).setCurrentRootId(routeId);
+                        ((MainActivity) getActivity()).setCanShowComments(false);
+                        ((MainActivity) getActivity()).getCommentsAsync(routeId);
+                        dismiss();
                     }
                 });
 
@@ -86,9 +81,8 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
                 ratingBar.setNumStars(5);
                 ratingBar.setStepSize(1);
                 //check if user already rated and setRating
-                //ratingBar.setScrollBarStyle(R.style.MyRatingBar);\
+                ratingBar.setRating((float) routeModel.userRate);
                 ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                //layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 ratingBar.setLayoutParams(layoutParams);
 
                 ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -96,8 +90,7 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
                     public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                         Toast.makeText(getContext(), Double.toString(ratingBar.getRating()), Toast.LENGTH_LONG).show();
 
-                        // send res to server
-                        //update avg rating
+                        ((MainActivity) getActivity()).postRatingAsync(routeModel.id, 1, ratingBar.getRating());
                     }
                 });
 
@@ -144,8 +137,7 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
         layout.setBackgroundColor(Color.WHITE);
 
         layout.removeAllViews();
-
-        final EditText textView = new EditText(getContext(),null, R.drawable.edit_text);
+        final EditText textView = new EditText(getContext());
         layout.addView(textView);
 
         Button btn = new Button(getContext(),null, R.style.MyButton);
@@ -158,12 +150,22 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
                 comment.text = txt;
                 Author author = new Author();
                 author.id = 1;
-                author.username = "Толмачев Артем";
+
+                author.username = "avtolmachev";
                 comment.author = author;
                 // set name of user
                 comment.thumbUps = 0;
                 comment.userHasLiked = false;
+                routeId = ((MainActivity) getActivity()).getCurrentRouteId();
+                comment.pathId = routeId;
                 comments.add(comment);
+
+                AddCommentModel addCommentModel = new AddCommentModel();
+                addCommentModel.pathId = comment.pathId;
+                addCommentModel.text = comment.text;
+                addCommentModel.userId = comment.author.id;
+
+                ((MainActivity) getActivity()).postComment(addCommentModel);
                 comment(comments);
             }
         });
@@ -180,7 +182,6 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
         writeCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // call method to write comment
                 addComment(comments);
             }
         });
@@ -222,9 +223,6 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //Toast.makeText(getContext(), "like podpiska", Toast.LENGTH_LONG).show();
-                    //change btn style
-                    //send changes to server
                     if (comments1.userHasLiked){
                         comments1.userHasLiked = false;
                         comments1.thumbUps--;
@@ -248,10 +246,7 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
     public void showRoutes(final RouteModelResponse routeModel){
         layout.setBackgroundColor(Color.WHITE);
 
-
         layout.removeAllViews();
-
-
 
         if(routeModel == null || routeModel.content.isEmpty()){
             TextView text = new TextView(getContext());
@@ -293,7 +288,6 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
             });
             layout.addView(btn);
         }
-
     }
 
     @Nullable
@@ -307,11 +301,16 @@ public class BottomSheetDialogRoutes extends BottomSheetDialogFragment {
         TextView text = v.findViewById(R.id.textView);
         text.setText("Список");
         text.setTextSize(17);
-        showRoutes(((MainActivity) getActivity()).getRouteModelResponse());
 
+        RouteModelResponse routeModel = ((MainActivity) getActivity()).getRouteModelResponse();
+
+        if (routeModel != null && ((MainActivity) getActivity()).getCanShowComments()){
+            comment(((MainActivity) getActivity()).getCommentResponse().content);
+            ((MainActivity) getActivity()).setCanShowComments(false);
+        }else{
+            showRoutes(routeModel);
+        }
 
         return v;
     }
-
-
 }

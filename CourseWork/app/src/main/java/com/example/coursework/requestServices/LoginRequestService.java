@@ -19,14 +19,13 @@ import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class RequestService extends Service {
+public class LoginRequestService extends Service {
     String str;
 
-    IncomingHandler inHandler;
+    LogonIncomingHandler inHandler;
 
     Messenger messenger;
     Messenger toActivityMessenger;
-
 
     @Override
     public void onCreate(){
@@ -35,7 +34,7 @@ public class RequestService extends Service {
         HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
-        inHandler = new IncomingHandler(thread.getLooper());
+        inHandler = new LogonIncomingHandler(thread.getLooper());
         messenger = new Messenger(inHandler);
     }
 
@@ -50,14 +49,13 @@ public class RequestService extends Service {
     }
 
     //обработчик сообщений активити
-    private class IncomingHandler extends Handler {
-        public IncomingHandler(Looper looper){
+    private class LogonIncomingHandler extends Handler {
+        public LogonIncomingHandler(Looper looper){
             super(looper);
         }
 
         @Override
         public void handleMessage(final Message msg){
-
             toActivityMessenger = msg.replyTo;
 
             str = (String)msg.obj;
@@ -78,7 +76,6 @@ public class RequestService extends Service {
                         }else {
                             connection.setRequestMethod("PUT");
                         }
-
 
                         if (msg.arg1 != 6){
                             connection.setRequestProperty("Content-Type", "application/json; utf-8");

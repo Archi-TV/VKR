@@ -32,6 +32,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.coursework.bottom_sheets.BottomSheetDialogMyRoutes;
 import com.example.coursework.bottom_sheets.BottomSheetDialogRoutes;
+import com.example.coursework.models.AddCommentModel;
 import com.example.coursework.models.ChangeRoutModel;
 import com.example.coursework.models.CommentResponse;
 import com.example.coursework.models.CreateRouteModel;
@@ -68,16 +69,23 @@ public class MainActivity extends AppCompatActivity {
     private final Messenger messenger = new Messenger(new IncomingHandler());
     private Messenger toServiceMessenger;
 
-    private String country = "";
+    private String address = "";
     private String url;
     private boolean canShowRoutes;
     private boolean creationOfMapIsAllowed;
     private boolean canShowMyRoutes;
     private boolean isServiceConnected = false;
     private boolean canShowPoints = false;
+    private boolean canShowComments = false;
 
     public boolean getCanShowPoints(){
         return canShowPoints;
+    }
+    public boolean getCanShowComments(){
+        return canShowComments;
+    }
+    public void setCanShowComments(boolean flag){
+        canShowComments = flag;
     }
 
     public void setCanShowPoints(){
@@ -90,6 +98,16 @@ public class MainActivity extends AppCompatActivity {
     private RouteModel _routeModel;
     private CreateRouteModel _createRouteModel;
     private ChangeRoutModel _changeRoutModel;
+
+    private int _currentRouteId;
+
+    public void setCurrentRootId(int routeId){
+        _currentRouteId = routeId;
+    }
+
+    public int getCurrentRouteId(){
+        return _currentRouteId;
+    }
 
     public boolean getIsServiceConnected(){
         return isServiceConnected;
@@ -150,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
             routeModelResponse = null;
             //showBottomSheet();
         }
-        //showBottomSheet();
-        //canShowRoutes = false;
     }
 
 
@@ -192,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
             _pathPointResponse = pathPointResponse;
             canShowPoints = true;
             showBottomSheet();
-            //canShowPoints = false;
         }
     }
 
@@ -201,8 +216,10 @@ public class MainActivity extends AppCompatActivity {
         try{
             commentResponse = new ObjectMapper().readValue(json, CommentResponse.class);
             _commentResponse = commentResponse;
+            canShowComments = true;
+            showBottomSheet();
 
-        }catch(Exception e){
+        }catch(Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             _commentResponse = null;
         }
@@ -239,14 +256,12 @@ public class MainActivity extends AppCompatActivity {
                     deserializeCreatePath(json);
                     break;
                 case 4:
-                    //Toast.makeText(getContext(), json, Toast.LENGTH_LONG).show();
-                    //canShowMyRoutes = true;
-                    //showBottomSheet();
-                    //canShowMyRoutes = false;
                     canShowPoints = false;
                     break;
                 case 5:
                     deserializeMyRoutesResponse(json);
+                    break;
+                case 6:
                     break;
                 case 16:
                     deserializeLatLngResponse(json);
@@ -287,18 +302,20 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {	}
     }
 
+    private final String _url = "http://192.168.1.74:8080/";
+
     public void getPointsAsync(int id){
-        url = "http://192.168.1.66:8080/path/points?pathId=" + id;
+        url = _url + "path/points?pathId=" + id;
         sendRequest(1, 0);
     }
 
     public void getCommentsAsync(int id){
-        url = "http://192.168.1.66:8080/comment/by-path?pathId=" + id + "&userId=" + 1;
+        url = _url + "comment/by-path?pathId=" + id + "&userId=" + 1;
         sendRequest(2, 0);
     }
 
     private void postCreateRoutesAsync(){
-        url = "http://192.168.1.66:8080/path/create";
+        url = _url + "path/create";
         String json = "";
         try{
             json = new ObjectMapper().writeValueAsString(_createRouteModel);
@@ -310,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void postChangeRouteAsync(ChangeRoutModel changeRoutModel){
-        url = "http://192.168.1.66:8080/path/change";
+        url = _url + "path/change";
         String json = "";
         try{
             json = new ObjectMapper().writeValueAsString(changeRoutModel);
@@ -322,18 +339,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getRoutesByUserAsync(int id){
-        url = "http://192.168.1.66:8080/path/by-user?userId=" + id;
+        url = _url + "path/by-user?userId=" + id;
         sendRequest(5, 0);
     }
 
+    @SuppressLint("DefaultLocale")
+    public void postRatingAsync(int pathId, int userId, double rating){
+        url = _url + String.format("path/rate?pathId=%d&userId=%d&rate=%f", pathId, userId, rating);
+        sendRequest(6, 1);
+    }
+
+    public void postComment(AddCommentModel addCommentModel){
+        url = _url + "comment/leave";
+        String json = "";
+        try {
+            json = new ObjectMapper().writeValueAsString(addCommentModel);
+        } catch (Exception e){
+
+        }
+        url += "@" + json;
+        sendRequest(7, 1);
+    }
+
     private void getLatLngAsync(){
-        url = country;
+        url = address;
         sendRequest(16, 0);
     }
 
 
     public void getRoutesAsync(){
-        url = "http://192.168.1.66:8080/path/near?latitude=55.0&longitude=56&userId=1";
+        url = _url + "path/near?latitude=55.0&longitude=56&userId=1";
         sendRequest(18, 0);
     }
 
@@ -354,6 +389,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     // сохраняем текст, введенный до нажатия Enter в переменную
                     String text = search.getText().toString();
+                    address = text;
+                    getLatLngAsync();
 
                     return true;
                 }
@@ -395,15 +432,15 @@ public class MainActivity extends AppCompatActivity {
         if(dest.getId() == R.id.navigation_home){
             BottomSheetDialogRoutes bottomSheet = new BottomSheetDialogRoutes();
 
-            bottomSheet.show(getSupportFragmentManager(), country);
+            bottomSheet.show(getSupportFragmentManager(), "");
         }
         else if (dest.getId() == R.id.navigation_notifications){
             BottomSheetDialogMyRoutes bottomSheet = new BottomSheetDialogMyRoutes();
 
-            bottomSheet.show(getSupportFragmentManager(), country);
+            bottomSheet.show(getSupportFragmentManager(), "");
         }
         else
-            Toast.makeText(this, "Oops!!!!!!!! We've fucked up", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Oops! Smth went wrong", Toast.LENGTH_LONG).show();
     }
 
     private Context getContext(){
@@ -411,19 +448,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mapUpdate(){
-        LatLng marker_latlng = new LatLng(Lat, Lng);
+        MarkerOptions markerOptions = new MarkerOptions();
+        LatLng latLng = new LatLng(Lat, Lng);
+        markerOptions.position(latLng);
+        map.addMarker(markerOptions);
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(marker_latlng)
-                .zoom(4.5f).build();
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-        map.moveCamera(cameraUpdate);
+
+        if (_pointForCreate == null){
+            _pointForCreate = new PointForCreate();
+        }
+        _pointForCreate.latitude = latLng.latitude;
+        _pointForCreate.longitude = latLng.longitude;
+        _pointForCreate.name = address;
+        _pointForCreate.address = address;
+        changeRoutModel.getPoints().add(_pointForCreate);
     }
 
-    private double Lat = 55.751244;
-    private double Lng = 37.618423;
+    //55.76170911045733, 37.406334443289126
+    private double Lat = 55.76170911045733;
+    private double Lng = 37.406334443289126;
     private SupportMapFragment mSupportMapFragment;
     private GoogleMap map;
+    private PointForCreate _pointForCreate;
     private void initGoogleMap(){
         if (mSupportMapFragment != null) {
             mSupportMapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -446,12 +492,12 @@ public class MainActivity extends AppCompatActivity {
 //                        } catch (Resources.NotFoundException e) {
 //                            Log.e(TAG, "Can't find style. Error: ", e);
 //                        }
-                        LatLng marker_latlng = new LatLng(Lat, Lng); // MAKE THIS WHATEVER YOU WANT
+                        LatLng marker_latlng = new LatLng(Lat, Lng);
                         map = googleMap;
 
                         CameraPosition cameraPosition = new CameraPosition.Builder()
                                 .target(marker_latlng)
-                                .zoom(4.5f).build();
+                                .zoom(15.5f).build();
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
                         googleMap.moveCamera(cameraUpdate);
 
@@ -494,14 +540,14 @@ public class MainActivity extends AppCompatActivity {
 
                                             try {
                                                 if (change){
-                                                    PointForCreate pointForCreate = new PointForCreate();
-                                                    pointForCreate.latitude = latLng.latitude;
-                                                    pointForCreate.longitude = latLng.longitude;
+                                                    _pointForCreate = new PointForCreate();
+                                                    _pointForCreate.latitude = latLng.latitude;
+                                                    _pointForCreate.longitude = latLng.longitude;
                                                     EditText editText = dialog.findViewById(R.id.editTextNameOfPoint);
-                                                    pointForCreate.name = editText.getText().toString();
+                                                    _pointForCreate.name = editText.getText().toString();
                                                     TextView textView = dialog.findViewById(R.id.textViewAddress);
-                                                    pointForCreate.address = textView.getText().toString();
-                                                    changeRoutModel.getPoints().add(pointForCreate);
+                                                    _pointForCreate.address = textView.getText().toString();
+                                                    changeRoutModel.getPoints().add(_pointForCreate);
                                                 }else {
                                                     _createRouteModel.authorUserId = 1;
                                                     PointForCreate pointForCreate = new PointForCreate();
